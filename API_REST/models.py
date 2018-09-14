@@ -20,15 +20,24 @@ class Profesor(models.Model):
     numero_documento = models.CharField(max_length=30)
     sexo_biologico = models.CharField(max_length=25)
 
+    def __str__(self):
+            return self.nombres + " " + self.apellidos
+
 class Grupo(models.Model):
     id = models.AutoField(primary_key=True)
     grado = models.CharField(max_length=50)
     consecutivo = models.CharField(max_length=4, default="NA")
     ano = models.SmallIntegerField(default=2018)
 
+    def __str__(self):
+        return self.grado + " - " + self.consecutivo + " " + str(self.ano)
+
 class ProfesorXGrupo(models.Model):
     profesor = models.ForeignKey('Profesor', null = True, on_delete = models.SET_NULL, blank=True)
     grupo = models.ForeignKey('Grupo', on_delete = models.CASCADE)
+
+    def __str__(self):
+            return str(self.profesor) + ' ' +  str(self.grupo)
 
 class Estudiante(models.Model):
     id = models.AutoField(primary_key=True)
@@ -37,9 +46,15 @@ class Estudiante(models.Model):
     sexo_biologico = models.CharField(max_length=25)
     descripcion =  models.TextField(null = True, blank=True)
 
+    def __str__(self):
+        return self.nombres + " " + self.apellidos
+
 class GrupoXEstudiante(models.Model):
     grupo = models.ForeignKey('Grupo', on_delete=models.CASCADE)
     estudiante = models.ForeignKey('Estudiante', null = True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+            return str(self.estudiante)+ ' ' +str(self.grupo)
 
 #Aquí existe una relación One to Many hacia la misma clase
 #Se logra colocando la palabra self al modelo de referencia
@@ -50,11 +65,17 @@ class Categoria(models.Model):
     tipo = models.CharField(max_length = 50)
     icono = models.CharField(null=True, max_length=200, blank=True)
 
+    def __str__(self):
+            return self.nombre
+
 class Seguimiento(models.Model):
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
     grupoxestudiante = models.ForeignKey('GrupoXEstudiante', on_delete = models.CASCADE)
     fecha = models.DateField(default=date.today)
     acumulador = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+            return str(self.categoria) + ' ' + str(self.grupoxestudiante) + ' ' + str(self.fecha)
 
 class Asistencia(models.Model):
     fecha = models.DateField(default = date.today)
