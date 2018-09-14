@@ -17,7 +17,9 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
 from API_REST import views
+
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^estudiantes/$', views.Estudiantes.as_view())
+    url(r'^admin/?', admin.site.urls),
+    url(r'^estudiantes/?$', views.Estudiantes.as_view()),
+    url(r'^seguimientos/?$', views.Seguimientos.as_view()),
 ]

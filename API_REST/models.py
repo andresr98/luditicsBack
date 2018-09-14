@@ -53,10 +53,10 @@ class Categoria(models.Model):
 class Seguimiento(models.Model):
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
     grupoxestudiante = models.ForeignKey('GrupoXEstudiante', on_delete = models.CASCADE)
-    fecha = models.DateField(primary_key = True, default=date.today)
+    fecha = models.DateField(default=date.today)
     acumulador = models.PositiveIntegerField(default=0)
 
 class Asistencia(models.Model):
-    fecha = models.DateField(primary_key=True, default = date.today)
+    fecha = models.DateField(default = date.today)
     grupoxestudiante = models.ForeignKey('GrupoXEstudiante', on_delete=models.CASCADE)
     asistencia = models.CharField(max_length=100)
