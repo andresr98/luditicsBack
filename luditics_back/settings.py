@@ -79,14 +79,21 @@ WSGI_APPLICATION = 'luditics_back.wsgi.application'
 
 #La base de datos por defecto es MySQL
 #Se deben brindar los datos de la base de datos donde esté alocado el servcico
+#DATABASES = {
+ #   'default': {
+  #      'ENGINE': 'django.db.backends.mysql',
+   #     'NAME': 'luditics',
+    #    'USER': 'root',
+     #   'PASSWORD': 'root',
+      #  'HOST': '',
+       # 'PORT': '3306',
+    #}
+#}
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'luditics',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '',
-        'PORT': '3306',
+    'defualt': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'sqlite3.db',                 
     }
 }
 
