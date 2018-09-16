@@ -36,7 +36,7 @@ class CategoriaSerializar(serializers.ModelSerializer):
 class SeguimientoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seguimiento
-        fields = ('categoria', 'grupoxestudiante', 'fecha', 'acumulador')
+        fields = ( 'grupoxestudiante', 'fecha', 'acumulador')
 
 class AsistenciaSerializer(serializers.ModelSerializer):
     class Meta:

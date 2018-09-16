@@ -18,7 +18,8 @@ class Profesor(models.Model):
     contrasena = models.CharField(max_length=255)
     tipo_documento = models.CharField(max_length=50)
     numero_documento = models.CharField(max_length=30)
-    sexo_biologico = models.CharField(max_length=25)
+    #1. Masculino   2. Femenino
+    sexo_biologico = models.PositiveIntegerField(default=1)
 
     def __str__(self):
             return self.nombres + " " + self.apellidos
@@ -33,7 +34,7 @@ class Grupo(models.Model):
         return self.grado + " - " + self.consecutivo + " " + str(self.ano)
 
 class ProfesorXGrupo(models.Model):
-    profesor = models.ForeignKey('Profesor', null = True, on_delete = models.SET_NULL, blank=True)
+    profesor = models.ForeignKey('Profesor', null = True, on_delete = models.SET_NULL)
     grupo = models.ForeignKey('Grupo', on_delete = models.CASCADE)
 
     def __str__(self):
@@ -43,7 +44,8 @@ class Estudiante(models.Model):
     id = models.AutoField(primary_key=True)
     nombres = models.CharField(max_length=50)
     apellidos = models.CharField(max_length=50) 
-    sexo_biologico = models.CharField(max_length=25)
+    #1. Masculino   2. Femenino
+    sexo_biologico = models.PositiveIntegerField(default=1)
     descripcion =  models.TextField(null = True, blank=True)
 
     def __str__(self):
@@ -60,16 +62,21 @@ class GrupoXEstudiante(models.Model):
 #Se logra colocando la palabra self al modelo de referencia
 class Categoria(models.Model):
     id = models.AutoField(primary_key = True)
-    subcategoria = models.ForeignKey('self', on_delete=models.CASCADE, null = True, blank=True)
+    subcategoria = models.ForeignKey('self', on_delete=models.SET_NULL, null = True, blank=True)
     nombre = models.CharField(max_length = 75)
-    tipo = models.CharField(max_length = 50)
+    #Se usa para especificar si es Comportamental, Cognitivo
+    #1 Comportamental 2 Cognitivo
+    tipo = models.PositiveIntegerField(default=1)
     icono = models.CharField(null=True, max_length=200, blank=True)
 
     def __str__(self):
-            return self.nombre
+        if(self.tipo == 1):
+            return self.nombre + " - " + "Comportamental"
+        else:
+            return self.nombre + " - " + "Cognitiva"
 
 class Seguimiento(models.Model):
-    categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
+    categoria = models.ForeignKey('Categoria', null = True, on_delete=models.CASCADE)
     grupoxestudiante = models.ForeignKey('GrupoXEstudiante', on_delete = models.CASCADE)
     fecha = models.DateField(default=date.today)
     acumulador = models.PositiveIntegerField(default=0)
@@ -80,4 +87,13 @@ class Seguimiento(models.Model):
 class Asistencia(models.Model):
     fecha = models.DateField(default = date.today)
     grupoxestudiante = models.ForeignKey('GrupoXEstudiante', on_delete=models.CASCADE)
-    asistencia = models.CharField(max_length=100)
+    #1. Asistío 2. Llego tarde 3. No Asistio
+    asistencia = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        if(self.asistencia == 1):
+            return str(self.grupoxestudiante) + " Asistio el día " + str(self.fecha)
+        elif(self.asistencia == 2):
+            return str(self.grupoxestudiante) + " Llego tarde el día " + str(self.fecha)
+        else:
+            return str(self.grupoxestudiante) + " No asistio el día " + str(self.fecha)

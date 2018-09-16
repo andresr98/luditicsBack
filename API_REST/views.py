@@ -50,14 +50,14 @@ class Seguimientos(APIView):
             data = request.data 
             id_estudiante = data['id_estudiante']
             tipo_categoria = data['tipo_categoria']
-
+            fecha = data['fecha']
             #Con cada argumento en Values se toma una columna en especifico.
             #Sucede que las tablas en la relación Many, pueden acceser a su relación One, por medio de 
             #su atributo definido en su modelo, en este caso categoria.
             #Cada , es un AND en un Where
             #Los __ son para acceder a las columnas del Modelo referenciado por la varible categoria
             seguimientos = Seguimiento.objects.values('categoria__id','categoria__nombre','categoria__icono','acumulador')\
-            .filter(categoria_id__tipo=tipo_categoria, grupoxestudiante_id__estudiante=id_estudiante)
+            .filter(categoria_id__tipo=tipo_categoria, grupoxestudiante_id__estudiante=id_estudiante, fecha=fecha)
 
             #Se retorna los datos recolectados y el status 200
             return Response(seguimientos, status=status.HTTP_200_OK)
