@@ -25,8 +25,11 @@ SECRET_KEY = 'c#m71#f5obveqhdsjc6-^wn%f(p6#5s33h)zy17qp_1+a992n-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'andresr.pythonanywhere.com',
+    'http://localhost:8100',
+    '*',]
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -40,11 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -91,9 +97,9 @@ WSGI_APPLICATION = 'luditics_back.wsgi.application'
 #}
 
 DATABASES = {
-    'defualt': {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'sqlite3.db',                 
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
