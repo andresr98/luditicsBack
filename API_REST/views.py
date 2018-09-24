@@ -64,16 +64,13 @@ class Seguimientos(APIView):
             .filter(categoria_id__tipo=tipo_categoria, grupoxestudiante_id__estudiante=id_estudiante, fecha=fecha)
 
             #Se retorna los datos recolectados y el status 200
-            return Response({"status": status.HTTP_200_OK, "entity":seguimientos, "error": ""},\
-             status=status.HTTP_200_OK)
+            return Response({"status": "", "entity":seguimientos, "error": ""},status=status.HTTP_200_OK)
         except KeyError:
             #Si no es posible obtener los datos desde el Request
-            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresador de forma incorrecta"},\
-             status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresador de forma incorrecta"},status=status.HTTP_400_BAD_REQUEST)
         except ObjectDoesNotExist:
             #Si no existen datos en la base de datos.
-            return Response({"status": status.HTTP_404_NOT_FOUND, "entity":"", "error":"No hay datos en la base de datos"},\
-             status= status.HTTP_404_NOT_FOUND)
+            return Response({"status": status.HTTP_404_NOT_FOUND, "entity":"", "error":"No hay datos en la base de datos"},status= status.HTTP_404_NOT_FOUND)
 
     #Se usa para actualizar un solo dato comportamentales
     def put(self, request):
