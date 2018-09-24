@@ -34,7 +34,7 @@ class Grupo(models.Model):
         return self.grado + " - " + self.consecutivo + " " + str(self.ano)
 
 class ProfesorXGrupo(models.Model):
-    profesor = models.ForeignKey('Profesor', null = True, on_delete = models.SET_NULL)
+    profesor = models.ForeignKey('Profesor', on_delete = models.CASCADE)
     grupo = models.ForeignKey('Grupo', on_delete = models.CASCADE)
 
     def __str__(self):
@@ -53,7 +53,7 @@ class Estudiante(models.Model):
 
 class GrupoXEstudiante(models.Model):
     grupo = models.ForeignKey('Grupo', on_delete=models.CASCADE)
-    estudiante = models.ForeignKey('Estudiante', null = True, on_delete=models.SET_NULL)
+    estudiante = models.ForeignKey('Estudiante', on_delete=models.CASCADE)
 
     def __str__(self):
             return str(self.estudiante)+ ' ' +str(self.grupo)
@@ -62,7 +62,7 @@ class GrupoXEstudiante(models.Model):
 #Se logra colocando la palabra self al modelo de referencia
 class Categoria(models.Model):
     id = models.AutoField(primary_key = True)
-    subcategoria = models.ForeignKey('self', on_delete=models.SET_NULL, null = True, blank=True)
+    padre = models.ForeignKey('self', on_delete=models.SET_NULL, null = True, blank=True)
     nombre = models.CharField(max_length = 75)
     #Se usa para especificar si es Comportamental, Cognitivo
     #1 Comportamental 2 Cognitivo
