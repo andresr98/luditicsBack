@@ -16,7 +16,8 @@ class Profesor(models.Model):
     apellidos = models.CharField(max_length=50)
     correo = models.EmailField(max_length=253)
     contrasena = models.CharField(max_length=255)
-    tipo_documento = models.CharField(max_length=50)
+    #1. Cedula Ciudadania 2. Cedula Extranjera
+    tipo_documento = models.PositiveIntegerField(default=1)
     numero_documento = models.CharField(max_length=30)
     #1. Masculino   2. Femenino
     sexo_biologico = models.PositiveIntegerField(default=1)

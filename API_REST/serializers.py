@@ -28,8 +28,8 @@ class GrupoXEstudianteSerializer(serializers.ModelSerializer):
         model = GrupoXEstudiante
         fields = ('grupo', 'estudiante')
 
-class CategoriaSerializar(serializers.ModelSerializer):
-    class Meta: 
+class CategoriaSerializer(serializers.ModelSerializer):
+    class Meta:
         model = Categoria
         fields = ('id', 'subcategoria', 'nombre', 'tipo', 'icono')
 

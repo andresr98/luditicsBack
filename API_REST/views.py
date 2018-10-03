@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .models import Estudiante, GrupoXEstudiante, Seguimiento, Categoria
-from .serializers import EstudianteSerializer, GrupoXEstudianteSerializer, SeguimientoSerializer
+from .models import Estudiante, GrupoXEstudiante, Seguimiento, Categoria, ProfesorXGrupo, Grupo
+from .serializers import EstudianteSerializer
 from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 
@@ -98,3 +98,52 @@ class Seguimientos(APIView):
             #Si no existen datos en la base de datos.
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"No se puede acceder a la base de datos"},\
              status= status.HTTP_404_NOT_FOUND)
+
+class Grupos(APIView):
+    def get(self,request):
+        id_profesor = request.GET.get('id_profesor',0)
+        if(id_profesor == 0):
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity":"", "error":"No se encuntran parametro del profesor"},\
+            status=status.HTTP_400_BAD_REQUEST)
+        else:
+            grupos = ProfesorXGrupo.objects.values('grupo__id', 'grupo__grado', 'grupo__consecutivo', 'grupo__ano')\
+            .filter(profesor_id__id = id_profesor)
+            return Response({"status": status.HTTP_200_OK, "entity": grupos, "error":""},status=status.HTTP_200_OK)
+
+
+#Esta vista se encarga de llenar un seguimiento por cada estudiante
+class SeguimientoXEstudiante(APIView):
+    def post (self, request):
+        try:
+            #Se obtienen los datos requeridos en el query
+            data = request.data
+            id_grupo = data['id_grupo']
+            fecha = data['fecha']
+
+            #Se accede a todos los padres de la tabla categoria. Se excluyen los nulos
+            padres = Categoria.objects.values('padre_id').distinct().exclude(padre_id__isnull=True)
+
+            #Se obtienen todas las categorias hojas
+            categorias = Categoria.objects.values('id').exclude(id__in=(padres))
+
+            #Se obtienen los estudiantes de un grupo
+            estudiantes = GrupoXEstudiante.objects.values('estudiante__id').filter(grupo__id=id_grupo)
+            for categoria in categorias:
+                for estudiante in estudiantes:
+                    #Se obtiene el id de la tabla, ya que es autogenerado
+                    grupoxest_id = GrupoXEstudiante.objects.values('id').get(grupo = id_grupo, estudiante = estudiante['estudiante__id'])
+
+                    #Se verifica que no exista el dato. En caso afirmativo, se inserta un nuevo registro
+                    #En caso contrario solo se dejan sus valores
+                    flag = Seguimiento.objects.filter(categoria_id=categoria['id'],fecha=fecha,grupoxestudiante_id=grupoxest_id['id'])
+                    if not flag:
+                        seguimiento = Seguimiento(categoria_id=categoria['id'],fecha=fecha,acumulador=0,grupoxestudiante_id=grupoxest_id['id'])
+                        seguimiento.save()
+                    else:
+                        flag.update()
+
+            return Response({"status": status.HTTP_200_OK, "entity": "Datos ingresados en bd", "error":""},status=status.HTTP_200_OK)
+        except KeyError:
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
