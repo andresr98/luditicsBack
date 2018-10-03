@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .models import Estudiante, GrupoXEstudiante, Seguimiento, Categoria
-from .serializers import EstudianteSerializer, GrupoXEstudianteSerializer, SeguimientoSerializer
+from .models import Estudiante, GrupoXEstudiante, Seguimiento, Categoria, Grupo, ProfesorXGrupo
+from .serializers import EstudianteSerializer
 from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 
@@ -96,3 +96,14 @@ class Seguimientos(APIView):
             #Si no existen datos en la base de datos.
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"No se puede acceder a la base de datos"},\
              status= status.HTTP_404_NOT_FOUND)
+
+class Grupos(APIView):
+    def get(self,request):
+        id_profesor = request.GET.get('id_profesor',0)
+        if(id_profesor == 0):
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity":"", "error":"No se encuntran parametro del profesor"},\
+            status=status.HTTP_400_BAD_REQUEST)
+        else:
+            grupos = ProfesorXGrupo.objects.values('grupo__id', 'grupo__grado', 'grupo__consecutivo', 'grupo__ano')\
+            .filter(profesor_id__id = id_profesor)
+            return Response({"status": status.HTTP_200_OK, "entity": grupos, "error":""},status=status.HTTP_200_OK)

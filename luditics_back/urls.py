@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^admin/?', admin.site.urls),
     url(r'^estudiantes/?$', views.Estudiantes.as_view()),
     url(r'^seguimientos/?$', views.Seguimientos.as_view()),
+    url(r'^grupos/?$', views.Grupos.as_view()),
 ]
