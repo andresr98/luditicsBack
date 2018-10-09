@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Estudiante, Categoria, Grupo, GrupoXEstudiante, Seguimiento, Profesor, ProfesorXGrupo
+from .models import Estudiante, Categoria, Grupo, GrupoXEstudiante, Seguimiento, Profesor, ProfesorXGrupo, Asistencia
 
 # Register your models here.
 admin.site.register(Estudiante)
@@ -9,3 +9,4 @@ admin.site.register(Grupo)
 admin.site.register(GrupoXEstudiante)
 admin.site.register(Profesor)
 admin.site.register(ProfesorXGrupo)
+admin.site.register(Asistencia)
