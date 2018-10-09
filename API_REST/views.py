@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .models import Estudiante, GrupoXEstudiante, Seguimiento, Categoria, ProfesorXGrupo, Grupo
+from .models import Estudiante, GrupoXEstudiante, Seguimiento, Categoria, ProfesorXGrupo, Grupo, Asistencia
 from .serializers import EstudianteSerializer
 from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
@@ -142,8 +142,36 @@ class SeguimientoXEstudiante(APIView):
                     else:
                         flag.update()
 
-            return Response({"status": status.HTTP_200_OK, "entity": "Datos ingresados en bd", "error":""},status=status.HTTP_200_OK)
+            return Response({"status": status.HTTP_201_CREATED, "entity": "Datos ingresados en bd", "error":""},status=status.HTTP_201_CREATED)
         except KeyError:
             return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
+
+class Asistencias (APIView):
+    def post (self, request):
+        try:
+            data = request.data
+            id_grupo = data['id_grupo']
+            fecha = data['fecha']
+            asistencia = 1
+            estudiantes = GrupoXEstudiante.objects.values('estudiante__id').filter(grupo__id=id_grupo)
+
+            for estudiante in estudiantes:
+                grupoxest_id = GrupoXEstudiante.objects.values('id').get(grupo = id_grupo, estudiante = estudiante['estudiante__id'])
+                
+                flag = Asistencia.objects.filter(grupoxestudiante_id=grupoxest_id['id'], fecha = fecha)
+
+                if not flag:
+                    asistenciaObjeto = Asistencia(grupoxestudiante_id = grupoxest_id['id'], fecha = fecha, asistencia = asistencia)
+                    asistenciaObjeto.save()
+                else:
+                    flag.update()
+
+            return Response({"status": status.HTTP_201_CREATED, "entity": "Asistencia creada", "error": "" }, status=status.HTTP_201_CREATED)
+        
+        except KeyError:
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
+        
         except ObjectDoesNotExist:
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
