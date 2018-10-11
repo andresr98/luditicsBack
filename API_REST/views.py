@@ -149,6 +149,24 @@ class SeguimientoXEstudiante(APIView):
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
 
 class Asistencias (APIView):
+    def get(self, request):
+        id_grupo = request.GET.get('id_grupo', 0)
+
+        if(id_grupo == 0):
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity":"", "error":"No se encuntran parametros"},\
+            status=status.HTTP_400_BAD_REQUEST)
+        
+        fecha = request.GET.get('fecha', 'default')
+
+        if(fecha == 'default'):
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity":"", "error":"No se encuntran parametros"},\
+            status=status.HTTP_400_BAD_REQUEST)
+
+        asistencias = Asistencia.objects.values('grupoxestudiante__estudiante_id__nombres', 'grupoxestudiante__estudiante_id__apellidos',\
+        'grupoxestudiante__estudiante_id__id', 'asistencia').filter(grupoxestudiante_id__grupo=id_grupo,fecha=fecha)
+
+        return Response({"status": status.HTTP_200_OK, "entity": asistencias, "error":""},status=status.HTTP_200_OK)
+        
     def post (self, request):
         try:
             data = request.data
