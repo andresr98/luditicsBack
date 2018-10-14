@@ -55,6 +55,8 @@ class Estudiante(models.Model):
 class GrupoXEstudiante(models.Model):
     grupo = models.ForeignKey('Grupo', on_delete=models.CASCADE)
     estudiante = models.ForeignKey('Estudiante', on_delete=models.CASCADE)
+    fila = models.IntegerField(default = -1)
+    columna = models.IntegerField(default = -1)
 
     def __str__(self):
             return str(self.estudiante)+ ' ' +str(self.grupo)
