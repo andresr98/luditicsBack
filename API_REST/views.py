@@ -11,15 +11,17 @@ from django.core.exceptions import ObjectDoesNotExist
 class Estudiantes(APIView):
     #Método GET, no se reciben parametros.
     def get(self, request):
-        #Se toman todos los estudiantes de la base de datos.
+        #Si no viene el parametro, el valor por defecto es 0, Un grupo inexistente
         id_grupo = request.GET.get('id_grupo',0)
 
         if(id_grupo == 0):
+            #Se toman todos los estudiantes de la base de datos.
             listaEstudiantes = Estudiante.objects.values('id', 'nombres', 'apellidos','grupoxestudiante__fila', 'grupoxestudiante__columna', \
             'sexo_biologico', 'descripcion')
-            #Se deben convertir los datos a un formato JSON. Se pasa la lista y el many para indicar la cantidad
+
             return Response({"status": 200, "entity":listaEstudiantes}, status=status.HTTP_200_OK)
         else:
+            #En caso de obtener un grupo, se traen los estudiantes pertenecientes
             listagrupo = GrupoXEstudiante.objects.filter(grupo_id=id_grupo)  
 
             listaEstudiantes = Estudiante.objects.values('id', 'nombres', 'apellidos','grupoxestudiante__fila', 'grupoxestudiante__columna', \
@@ -204,6 +206,25 @@ class Asistencias (APIView):
 
             return Response({"status": status.HTTP_200_OK, "entity": "Datos actulizados", "error":""},status=status.HTTP_200_OK)
 
+        except KeyError:
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
+        
+        except ObjectDoesNotExist:
+            return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
+
+class GrupoXEstudiantes(APIView):
+
+    def put(self, request):
+        try:
+            data = request.data
+            id_grupo = data['id_grupo']
+            id_estudiante = data['id_estudiante']
+            fila = data['fila'] 
+            columna = data['columna']
+
+            GrupoXEstudiante.objects.filter(grupo=id_grupo, estudiante=id_estudiante).update(fila = fila, columna= columna)
+            return Response({"status": status.HTTP_200_OK, "entity": "Datos actulizados", "error":""},status=status.HTTP_200_OK)
+            
         except KeyError:
             return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
         
