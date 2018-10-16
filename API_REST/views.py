@@ -12,38 +12,22 @@ class Estudiantes(APIView):
     #Método GET, no se reciben parametros.
     def get(self, request):
         #Se toman todos los estudiantes de la base de datos.
-        listaEstudiantes = Estudiante.objects.all()
-        #Se deben convertir los datos a un formato JSON. Se pasa la lista y el many para indicar la cantidad
-        serializer = EstudianteSerializer(listaEstudiantes, many=True)
+        id_grupo = request.GET.get('id_grupo',0)
 
-        return Response({"status": 200, "entity":serializer.data}, status=status.HTTP_200_OK)
+        if(id_grupo == 0):
+            listaEstudiantes = Estudiante.objects.values('id', 'nombres', 'apellidos','grupoxestudiante__fila', 'grupoxestudiante__columna', \
+            'sexo_biologico', 'descripcion')
+            #Se deben convertir los datos a un formato JSON. Se pasa la lista y el many para indicar la cantidad
+            return Response({"status": 200, "entity":listaEstudiantes}, status=status.HTTP_200_OK)
+        else:
+            listagrupo = GrupoXEstudiante.objects.filter(grupo_id=id_grupo)  
 
-    #Método POST, se recibe parametro desde el body
-    def post(self, request):
-        #Se intentan tomar los datos que se requieren para el query
-        try:
-            #Se toman todos los datos del resquest
-            data = request.data
-            #Se accede al campo grupo del JSON
-            grupo = data['grupo']
-            #Se toma el grupo de la base de datos. Filter es una condición, en los parentesis
-            #va la condición del atributo de la tabla.
-            listagrupo = GrupoXEstudiante.objects.filter(grupo_id=grupo)
+            listaEstudiantes = Estudiante.objects.values('id', 'nombres', 'apellidos','grupoxestudiante__fila', 'grupoxestudiante__columna', \
+            'sexo_biologico', 'descripcion').filter(grupoxestudiante__in=(listagrupo))
 
-            listaEstudiantes = Estudiante.objects.filter(grupoxestudiante__in=(listagrupo))
-            serializer = EstudianteSerializer(listaEstudiantes, many = True)
-            return Response({"status": status.HTTP_200_OK, "entity":serializer.data, "error": ""},\
+            return Response({"status": status.HTTP_200_OK, "entity":listaEstudiantes, "error": ""},\
             status=status.HTTP_200_OK)
-
-        except KeyError:
-            #Si no es posible obtener los datos desde el Request
-            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity":"", "error": "Campos ingresados de forma incorrecta"},\
-             status=status.HTTP_400_BAD_REQUEST)
-        except ObjectDoesNotExist:
-            #Si no existen datos en la base de datos.
-            return Response({"status": status.HTTP_404_NOT_FOUND, "entity":"", "error": "No hay datos"},\
-             status= status.HTTP_404_NOT_FOUND)
-
+            
 class Seguimientos(APIView):
     #Método POST, se recibe parametro desde el body
     #Se usa para traer los datos comportamentales
@@ -166,7 +150,7 @@ class Asistencias (APIView):
 
         #Se obtiene el nombre, apellido, id,y el tipo de asistencia donde se filtre por el grupo y la fecha parametro
         asistencias = Asistencia.objects.values('grupoxestudiante__estudiante_id__nombres', 'grupoxestudiante__estudiante_id__apellidos',\
-        'grupoxestudiante__estudiante_id__id', 'asistencia').filter(grupoxestudiante_id__grupo=id_grupo,fecha=fecha)
+        'grupoxestudiante__estudiante_id__id', 'asistencia', 'grupoxestudiante__fila', 'grupoxestudiante__columna').filter(grupoxestudiante_id__grupo=id_grupo,fecha=fecha)
 
         return Response({"status": status.HTTP_200_OK, "entity": asistencias, "error":""},status=status.HTTP_200_OK)
         
