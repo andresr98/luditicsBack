@@ -93,7 +93,7 @@ class Grupos(APIView):
             status=status.HTTP_400_BAD_REQUEST)
         else:
             #Se filtran los grupos por profesor y se retornan
-            grupos = ProfesorXGrupo.objects.values('grupo__id', 'grupo__grado', 'grupo__consecutivo', 'grupo__ano')\
+            grupos = ProfesorXGrupo.objects.values('grupo__id', 'grupo__grado', 'grupo__consecutivo', 'grupo__ano', 'filas', 'columnas')\
             .filter(profesor_id__id = id_profesor)
             return Response({"status": status.HTTP_200_OK, "entity": grupos, "error":""},status=status.HTTP_200_OK)
 

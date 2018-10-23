@@ -37,6 +37,8 @@ class Grupo(models.Model):
 class ProfesorXGrupo(models.Model):
     profesor = models.ForeignKey('Profesor', on_delete = models.CASCADE)
     grupo = models.ForeignKey('Grupo', on_delete = models.CASCADE)
+    filas = models.PositiveIntegerField(default=0)
+    columnas = models.PositiveIntegerField(default=5)
 
     def __str__(self):
             return str(self.profesor) + ' ' +  str(self.grupo)
