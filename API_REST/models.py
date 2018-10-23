@@ -74,6 +74,7 @@ class Categoria(models.Model):
     tipo = models.PositiveIntegerField(default=1)
     icono = models.CharField(null=True, max_length=200, blank=True)
     descripcion = models.CharField(null=True, max_length=200, blank=True)
+    habilitada = models.BooleanField(default=True)
 
     def __str__(self):
         if(self.tipo == 1):
