@@ -22,14 +22,14 @@ class Estudiantes(APIView):
             return Response({"status": 200, "entity":listaEstudiantes}, status=status.HTTP_200_OK)
         else:
             #En caso de obtener un grupo, se traen los estudiantes pertenecientes
-            listagrupo = GrupoXEstudiante.objects.filter(grupo_id=id_grupo)  
+            #listagrupo = GrupoXEstudiante.objects.filter(grupo_id=id_grupo)
 
             listaEstudiantes = Estudiante.objects.values('id', 'nombres', 'apellidos','grupoxestudiante__fila', 'grupoxestudiante__columna', \
-            'sexo_biologico', 'descripcion').filter(grupoxestudiante__in=(listagrupo))
+            'sexo_biologico', 'descripcion').filter(grupoxestudiante__grupo=id_grupo)
 
             return Response({"status": status.HTTP_200_OK, "entity":listaEstudiantes, "error": ""},\
             status=status.HTTP_200_OK)
-            
+
 class Seguimientos(APIView):
     #Método POST, se recibe parametro desde el body
     #Se usa para traer los datos comportamentales
@@ -143,7 +143,7 @@ class Asistencias (APIView):
         if(id_grupo == 0):
             return Response({"status": status.HTTP_400_BAD_REQUEST, "entity":"", "error":"Campos ingresados de forma incorrecta"},\
             status=status.HTTP_400_BAD_REQUEST)
-        
+
         fecha = request.GET.get('fecha', 'default')
 
         if(fecha == 'default'):
@@ -155,7 +155,7 @@ class Asistencias (APIView):
         'grupoxestudiante__estudiante_id__id', 'asistencia', 'grupoxestudiante__fila', 'grupoxestudiante__columna').filter(grupoxestudiante_id__grupo=id_grupo,fecha=fecha)
 
         return Response({"status": status.HTTP_200_OK, "entity": asistencias, "error":""},status=status.HTTP_200_OK)
-        
+
     def post (self, request):
         #Este metodo llenara toda la asistencia de un grupo, según el numero de estudiantes
         try:
@@ -170,7 +170,7 @@ class Asistencias (APIView):
             #Para cada uno de ellos se busca su id en la tabla join y se guarda o se actualiza si existe o no el registro
             for estudiante in estudiantes:
                 grupoxest_id = GrupoXEstudiante.objects.values('id').get(grupo = id_grupo, estudiante = estudiante['estudiante__id'])
-                
+
                 flag = Asistencia.objects.filter(grupoxestudiante_id=grupoxest_id['id'], fecha = fecha)
 
                 if not flag:
@@ -180,10 +180,10 @@ class Asistencias (APIView):
                     flag.update()
 
             return Response({"status": status.HTTP_201_CREATED, "entity": "Asistencia creada", "error": "" }, status=status.HTTP_201_CREATED)
-        
+
         except KeyError:
             return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Campos ingresados de forma incorrecta"},status=status.HTTP_400_BAD_REQUEST)
-        
+
         except ObjectDoesNotExist:
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
 
@@ -193,7 +193,7 @@ class Asistencias (APIView):
             data = request.data
             id_grupo = data['id_grupo']
             id_estudiante = data['id_estudiante']
-            fecha = data['fecha'] 
+            fecha = data['fecha']
             asistencia = data['asistencia']
 
             #La asistencia solo puede estar en estos tres valores
@@ -208,7 +208,7 @@ class Asistencias (APIView):
 
         except KeyError:
             return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
-        
+
         except ObjectDoesNotExist:
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
 
@@ -219,14 +219,14 @@ class GrupoXEstudiantes(APIView):
             data = request.data
             id_grupo = data['id_grupo']
             id_estudiante = data['id_estudiante']
-            fila = data['fila'] 
+            fila = data['fila']
             columna = data['columna']
 
             GrupoXEstudiante.objects.filter(grupo=id_grupo, estudiante=id_estudiante).update(fila = fila, columna= columna)
             return Response({"status": status.HTTP_200_OK, "entity": "Datos actulizados", "error":""},status=status.HTTP_200_OK)
-            
+
         except KeyError:
             return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
-        
+
         except ObjectDoesNotExist:
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
