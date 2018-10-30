@@ -46,7 +46,7 @@ class Seguimientos(APIView):
             #Cada , es un AND en un Where
             #Los __ son para acceder a las columnas del Modelo referenciado por la varible categoria
             seguimientos = Seguimiento.objects.values('categoria__id','categoria__nombre','categoria__icono','acumulador')\
-            .filter(categoria_id__tipo=tipo_categoria, grupoxestudiante_id__estudiante=id_estudiante,fecha=fecha, Categoria_id__habilitada=True)
+            .filter(categoria_id__tipo=tipo_categoria, grupoxestudiante_id__estudiante=id_estudiante,fecha=fecha, categoria_id__habilitada=True)
 
             return Response({"status": status.HTTP_200_OK, "entity":seguimientos, "error": ""},\
              status=status.HTTP_200_OK)
