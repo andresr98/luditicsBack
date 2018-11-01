@@ -230,3 +230,13 @@ class GrupoXEstudiantes(APIView):
 
         except ObjectDoesNotExist:
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
+
+class Categorias(APIView):
+
+    def get(self, request):
+        categorias = Categoria.objects.values('id', 'nombre', 'tipo').filter(habilitada = True)
+
+        if not categorias:
+            return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "" , "error":"No se encuentran categorias"},status=status.HTTP_404_NOT_FOUND)
+        
+        return Response({"status": status.HTTP_200_OK, "entity": categorias, "error":""},status=status.HTTP_200_OK)
