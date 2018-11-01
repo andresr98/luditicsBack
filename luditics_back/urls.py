@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^seguimientoxestudiante/?$', views.SeguimientoXEstudiante.as_view()),
     url(r'^asistencias/?$', views.Asistencias.as_view()),
     url(r'^grupoxestudiantes/?$', views.GrupoXEstudiantes.as_view()),
+    url(r'^categorias/?$', views.Categorias.as_view()),
 ]
