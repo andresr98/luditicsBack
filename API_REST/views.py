@@ -234,7 +234,8 @@ class GrupoXEstudiantes(APIView):
 class Categorias(APIView):
 
     def get(self, request):
-        categorias = Categoria.objects.values('id', 'nombre', 'tipo').filter(habilitada = True)
+        padres = Categoria.objects.values('padre_id').distinct().exclude(padre_id__isnull=True)
+        categorias = Categoria.objects.values('id', 'nombre', 'tipo').exclude(id__in=(padres)).filter(habilitada = True)
 
         if not categorias:
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "" , "error":"No se encuentran categorias"},status=status.HTTP_404_NOT_FOUND)
