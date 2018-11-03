@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from .models import Estudiante, GrupoXEstudiante, Seguimiento, Categoria, ProfesorXGrupo, Grupo, Asistencia
 from .serializers import EstudianteSerializer
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
 # Create your views here.
 
 #Cada clase significa una vista, heredan de APIView para implementar los metodos HTTP (Get, Post , Put, Delete)
@@ -241,3 +242,25 @@ class Categorias(APIView):
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "" , "error":"No se encuentran categorias"},status=status.HTTP_404_NOT_FOUND)
         
         return Response({"status": status.HTTP_200_OK, "entity": categorias, "error":""},status=status.HTTP_200_OK)
+
+class EstadisticaIndividual(APIView):
+
+    def post(self, request):
+        try: 
+            data = request.data
+            id_grupo = data['id_grupo']
+            id_estudiante = data['id_estudiante']
+            fecha_inicial = data['fecha_inicial']
+            fecha_final = data['fecha_final']
+            id_categorias = data['id_categorias']
+
+            estadisticas = Seguimiento.objects.values('categoria__nombre').filter(categoria_id__in = id_categorias, grupoxestudiante_id__estudiante=id_estudiante, grupoxestudiante_id__grupo=id_grupo, \
+            fecha__range=(fecha_inicial, fecha_final)).annotate(repeticiones=Sum('acumulador'))
+
+            return Response({"status": status.HTTP_200_OK, "entity": estadisticas, "error":""},status=status.HTTP_200_OK)
+            
+        except KeyError:
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
+
+        except ObjectDoesNotExist:
+            return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
