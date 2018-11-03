@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^asistencias/?$', views.Asistencias.as_view()),
     url(r'^grupoxestudiantes/?$', views.GrupoXEstudiantes.as_view()),
     url(r'^categorias/?$', views.Categorias.as_view()),
+    url(r'^estadisticas/individual/?$', views.EstadisticaIndividual.as_view()),
 ]
