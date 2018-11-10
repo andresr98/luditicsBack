@@ -41,6 +41,8 @@ class Seguimientos(APIView):
             id_estudiante = data['id_estudiante']
             tipo_categoria = data['tipo_categoria']
             fecha = data['fecha']
+            #grupo = data['grupo']
+            #grupoxestudiante_id__grupo=grupo
             #Con cada argumento en Values se toma una columna en especifico.
             #Sucede que las tablas en la relación Many, pueden acceser a su relación One, por medio de
             #su atributo definido en su modelo, en este caso categoria.
@@ -240,13 +242,13 @@ class Categorias(APIView):
 
         if not categorias:
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "" , "error":"No se encuentran categorias"},status=status.HTTP_404_NOT_FOUND)
-        
+
         return Response({"status": status.HTTP_200_OK, "entity": categorias, "error":""},status=status.HTTP_200_OK)
 
 class EstadisticaIndividual(APIView):
 
     def post(self, request):
-        try: 
+        try:
             data = request.data
             id_grupo = data['id_grupo']
             id_estudiante = data['id_estudiante']
@@ -258,7 +260,7 @@ class EstadisticaIndividual(APIView):
             fecha__range=(fecha_inicial, fecha_final)).annotate(repeticiones=Sum('acumulador'))
 
             return Response({"status": status.HTTP_200_OK, "entity": estadisticas, "error":""},status=status.HTTP_200_OK)
-            
+
         except KeyError:
             return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
 
