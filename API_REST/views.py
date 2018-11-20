@@ -287,3 +287,22 @@ class EstadisticaGrupal(APIView):
 
         except ObjectDoesNotExist:
             return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
+
+class EstadisticaGrupal2(APIView):
+
+    def post(self, request):
+        try:
+            data = request.data
+            id_grupo = data['id_grupo']
+            fecha_inicial = data['fecha_inicial']
+            fecha_final = data['fecha_final']
+
+            estadisticas = Seguimiento.objects.values('categoria__nombre').filter(grupoxestudiante_id__grupo=id_grupo,fecha__range=(fecha_inicial, fecha_final)).annotate(repeticiones=Sum('acumulador')).order_by('repeticiones')
+
+            return Response({"status": status.HTTP_200_OK, "entity": estadisticas, "error":""},status=status.HTTP_200_OK)
+
+        except KeyError:
+            return Response({"status": status.HTTP_400_BAD_REQUEST, "entity": "", "error":"Datos ingresados incorrectamente"},status=status.HTTP_400_BAD_REQUEST)
+
+        except ObjectDoesNotExist:
+            return Response({"status": status.HTTP_404_NOT_FOUND, "entity": "", "error":"El objeto no existe"},status=status.HTTP_404_NOT_FOUND)
