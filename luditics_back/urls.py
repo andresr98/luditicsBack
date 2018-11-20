@@ -29,4 +29,5 @@ urlpatterns = [
     url(r'^categorias/?$', views.Categorias.as_view()),
     url(r'^estadisticas/individual/?$', views.EstadisticaIndividual.as_view()),
     url(r'^estadisticas/grupal/?$', views.EstadisticaGrupal.as_view()),
+    url(r'^estadisticas/grupal2/?$', views.EstadisticaGrupal2.as_view()),
 ]
