@@ -276,7 +276,7 @@ class EstadisticaGrupal(APIView):
             fecha_inicial = data['fecha_inicial']
             fecha_final = data['fecha_final']
             id_categoria = data['id_categoria']
-            
+
             estadisticas = Seguimiento.objects.values('categoria__nombre','grupoxestudiante__estudiante').filter(categoria_id = id_categoria, grupoxestudiante_id__grupo=id_grupo, \
             fecha__range=(fecha_inicial, fecha_final)).annotate(repeticiones=Sum('acumulador')).order_by('repeticiones')
 
@@ -296,8 +296,9 @@ class EstadisticaGrupal2(APIView):
             id_grupo = data['id_grupo']
             fecha_inicial = data['fecha_inicial']
             fecha_final = data['fecha_final']
+            id_categorias = data['id_categorias']
 
-            estadisticas = Seguimiento.objects.values('categoria__nombre').filter(grupoxestudiante_id__grupo=id_grupo,fecha__range=(fecha_inicial, fecha_final)).annotate(repeticiones=Sum('acumulador')).order_by('repeticiones')
+            estadisticas = Seguimiento.objects.values('categoria__nombre').filter(categoria_id__in = id_categorias,grupoxestudiante_id__grupo=id_grupo,fecha__range=(fecha_inicial, fecha_final)).annotate(repeticiones=Sum('acumulador')).order_by('repeticiones')
 
             return Response({"status": status.HTTP_200_OK, "entity": estadisticas, "error":""},status=status.HTTP_200_OK)
 
